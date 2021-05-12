@@ -9,6 +9,4 @@ inputs:
 runs:
   using: 'node12'
   main: 'dist/index.js'
-  with:
-    repo-token: ${{ secrets.GITHUB_TOKEN }}
 

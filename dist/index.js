@@ -73,7 +73,7 @@ function run() {
             core.debug(`created comment URL: ${response.data.html_url}`);
             core.setOutput('comment-url', response.data.html_url);
             core.debug(new Date().toTimeString());
-            core.setOutput('time', new Date().toTimeString());
+            core.setOutput('responseMessage', "We are done here!");
         }
         catch (error) {
             core.setFailed(error.message);
