@@ -3,6 +3,7 @@ on: # rebuild any PRs and main branch changes
   pull_request:
 
 jobs:
+  runs-on: ubuntu-latest
   checkout:
     steps:
       - uses: actions/checkout@v2
