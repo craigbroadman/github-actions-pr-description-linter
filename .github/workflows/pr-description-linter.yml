@@ -17,7 +17,8 @@ jobs:
     steps:
     - name: PR Lint
       id: prlint
-      uses: craigbroadman/github-actions-pr-description-linter@main
+      uses: ./
+      # uses: craigbroadman/github-actions-pr-description-linter@main
       with:
         message: 'Craig has checked this'
         repo-token: ${{ secrets.GITHUB_TOKEN }}
