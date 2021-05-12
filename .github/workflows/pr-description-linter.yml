@@ -3,8 +3,8 @@ on: # rebuild any PRs and main branch changes
   pull_request:
 
 jobs:
-  runs-on: ubuntu-latest
   checkout:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
   build: # make sure build/ci work properly
