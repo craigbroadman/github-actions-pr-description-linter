@@ -1,7 +1,15 @@
 on: [push]
 
 jobs:
-  hello_world_job:
+ build: # make sure build/ci work properly
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          npm install
+      - run: |
+          npm run all
+  pr_description_lint:
     runs-on: ubuntu-latest
     name: A job to check the PR description 
     steps:
