@@ -50,7 +50,7 @@ function run() {
                 core.setFailed('github.context.payload.pull_request does not exist');
                 return;
             }
-            core.debug(`pr description: ${pr}`);
+            core.debug(`PR body: ${pr.body}`);
             // Get input parameters.
             const githubToken = core.getInput('repo-token');
             const message = core.getInput('message');
