@@ -14,6 +14,8 @@ async function run(): Promise<void> {
       return;
     }
 
+    core.debug(`pr description: ${pr}`);
+
     // Get input parameters.
     const githubToken = core.getInput('repo-token');
     const message = core.getInput('message');
