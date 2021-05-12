@@ -1,13 +1,12 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-// import {wait} from './wait'
 
 async function run(): Promise<void> {
   try {
     // const ms: string = core.getInput('milliseconds')
     core.debug(new Date().toTimeString());
-	
-     // The pull_request exists on payload when a pull_request event is triggered.
+
+    // The pull_request exists on payload when a pull_request event is triggered.
     // Sets action status to failed when pull_request does not exist on payload.
     const pr = github.context.payload.pull_request;
     if (!pr) {
@@ -35,7 +34,6 @@ async function run(): Promise<void> {
     const response = await octokit.issues.createComment({
       owner,
       repo,
-      // eslint-disable-next-line @typescript-eslint/camelcase
       issue_number: pr.number,
       body: message
     });
@@ -46,47 +44,10 @@ async function run(): Promise<void> {
 
     core.debug(new Date().toTimeString());
 
-    core.setOutput('time', new Date().toTimeString());
+    core.setOutput('responseMessage', "We are done here!");
   } catch (error) {
     core.setFailed(error.message)
   }
-}
-
-async function sendReaction() {
-  // local GITHUB_ISSUE_NUMBER="$1"
-
-  //   curl -sSL \
-  //        -H "Authorization: token ${GITHUB_TOKEN}" \
-  //        -H "Accept: application/vnd.github.squirrel-girl-preview+json" \
-  //        -X POST \
-  //        -H "Content-Type: application/json" \
-  //        -d "{\"content\":\"heart\"}" \
-  //           "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${GITHUB_ISSUE_NUMBER}/reactions"
-}
-
-async function sendComment() {
-  // local GITHUB_ISSUE_NUMBER="$1"
-  // local GITHUB_ISSUE_COMMENT="$2"
-
-  // curl -sSL \
-  //      -H "Authorization: token ${GITHUB_TOKEN}" \
-  //      -H "Accept: application/vnd.github.v3+json" \
-  //      -X POST \
-  //      -H "Content-Type: application/json" \
-  //      -d "{\"body\":\"${GITHUB_ISSUE_COMMENT}\"}" \
-  //         "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${GITHUB_ISSUE_NUMBER}/comments"
-}
-
-async function closeIssue() {
-  // local GITHUB_ISSUE_NUMBER="$1"
-
-  // curl -sSL \
-  //      -H "Authorization: token ${GITHUB_TOKEN}" \
-  //      -H "Accept: application/vnd.github.v3+json" \
-  //      -X POST \
-  //      -H "Content-Type: application/json" \
-  //      -d "{\"state\":\"closed\"}" \
-  //         "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${GITHUB_ISSUE_NUMBER}"
 }
 
 run()

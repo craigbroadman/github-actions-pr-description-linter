@@ -1,0 +1,30 @@
+name: 'pr-description-lint'
+on: # rebuild any PRs and main branch changes
+  pull_request:
+  push:
+    branches:
+      - main
+      - 'releases/*'
+
+jobs:
+  build: # make sure build/ci work properly
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          npm install
+      - run: |
+          npm run all
+  pr_description_lint:
+    runs-on: ubuntu-latest
+    name: A job to check the PR description
+    steps:
+    - name: PR Lint
+      id: prlint
+      uses: craigbroadman/github-actions-pr-description-linter@main
+      with:
+        message: 'Craig has checked this'
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    # Use the output from the `prlint` step
+    - name: Get the output response message
+      run: echo "Response- ${{ steps.prlint.outputs.responseMessage }}"
