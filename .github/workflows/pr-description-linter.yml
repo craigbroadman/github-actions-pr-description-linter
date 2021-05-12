@@ -3,22 +3,26 @@ on: # rebuild any PRs and main branch changes
   pull_request:
 
 jobs:
-  build: # make sure build/ci work properly
+  checkout:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+  build: # make sure build/ci work properly
+    runs-on: ubuntu-latest
+    needs: checkout
+    steps:
       - run: |
           npm install
       - run: |
           npm run all
   pr_description_lint:
     runs-on: ubuntu-latest
+    needs: checkout
     name: A job to check the PR description
     steps:
     - name: PR Lint
       id: prlint
-      uses: ./
-      # uses: craigbroadman/github-actions-pr-description-linter@main
+      uses: craigbroadman/github-actions-pr-description-linter@main
       with:
         message: 'Craig has checked this'
         repo-token: ${{ secrets.GITHUB_TOKEN }}
