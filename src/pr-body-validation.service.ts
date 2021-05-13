@@ -1,3 +1,4 @@
+import * as core from '@actions/core'
 import {IPrBodyValidationStatus} from './pr-body-validation-status.model'
 
 export class PrBodyValidationService {
@@ -12,6 +13,9 @@ export class PrBodyValidationService {
     prBody: string | null | undefined
   ): Promise<IPrBodyValidationStatus> {
     return new Promise(resolve => {
+
+      core.debug(`Validating PR body: ${prBody}`)
+
       // Should cater for undefined, null, empty
       if (!prBody || prBody.length < 1) {
         resolve({
