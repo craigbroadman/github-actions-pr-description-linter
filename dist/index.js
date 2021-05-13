@@ -47,13 +47,13 @@ function run() {
             // Sets action status to failed when pull_request does not exist on payload.
             const pr = github.context.payload.pull_request;
             if (!pr) {
-                core.setFailed('github.context.payload.pull_request does not exist. Have the correct event triggers been configured?');
+                core.setFailed(`github.context.payload.pull_request does not exist. Have the correct event triggers been configured?`);
                 return;
             }
             core.debug(`PR body: ${pr.body}`);
             // Get input parameters.
-            const githubToken = core.getInput('repo-token');
-            const message = core.getInput('message');
+            const githubToken = core.getInput(`repo-token`);
+            const message = core.getInput(`message`);
             core.debug(`message: ${message}`);
             // Create a GitHub client.
             // The Octokit is a helper, to interact with
@@ -61,8 +61,8 @@ function run() {
             // You can look up the REST interface
             // here: https://octokit.github.io/rest.js/v18
             const octokit = github.getOctokit(githubToken);
-            let prBodyValidationService = new pr_body_validation_service_1.PrBodyValidationService();
-            var result = yield prBodyValidationService.validateBody(pr.Body);
+            const prBodyValidationService = new pr_body_validation_service_1.PrBodyValidationService();
+            const result = yield prBodyValidationService.validateBody(pr.Body);
             // Get owner and repo from context
             const owner = github.context.repo.owner;
             const repo = github.context.repo.repo;
@@ -75,11 +75,11 @@ function run() {
                     body: result.message
                 });
                 core.debug(`created comment URL: ${response.data.html_url}`);
-                core.setOutput('comment-url', response.data.html_url);
-                core.setOutput('responseMessage', "✅ All checks passed: " + result.message);
+                core.setOutput(`comment-url`, response.data.html_url);
+                core.setOutput(`responseMessage`, `✅ All checks passed: ${result.message}`);
             }
             else {
-                core.setOutput('responseMessage', "🚧 PR Body incomplete: " + result.message);
+                core.setOutput(`responseMessage`, `🚧 PR Body incomplete: ${result.message}`);
                 core.setFailed(result.message);
             }
             core.debug(new Date().toTimeString());
@@ -95,57 +95,66 @@ run();
 /***/ }),
 
 /***/ 812:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ (function(__unused_webpack_module, exports) {
 
 "use strict";
 
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PrBodyValidationService = void 0;
 class PrBodyValidationService {
     constructor() {
-        this.placeholderItems = [
-            "{{!!DETAILS GO HERE!!}}",
-        ];
+        this.placeholderItems = [`{{!!DETAILS GO HERE!!}}`];
         this.completedFinalChecklist = [
-            "- [x] **Author(s):**",
-            "- [x] **Reviewer(s):**"
+            `- [x] **Author(s):**`,
+            `- [x] **Reviewer(s):**`
         ];
     }
     validateBody(prBody) {
-        return new Promise(resolve => {
-            // Should cater for undefined, null, empty
-            if (!prBody || prBody.length < 1) {
-                resolve({
-                    isPrBodyComplete: false,
-                    message: "The PR Body is empty - do you have the pull request template setup (docs -> pull_request_template.md)?"
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise(resolve => {
+                // Should cater for undefined, null, empty
+                if (!prBody || prBody.length < 1) {
+                    resolve({
+                        isPrBodyComplete: false,
+                        message: `The PR Body is empty - do you have the pull request template setup (docs -> pull_request_template.md)?`
+                    });
+                    return;
+                }
+                const arePlaceholdersIncomplete = this.placeholderItems.every(function (item) {
+                    return prBody.includes(item);
                 });
-                return;
-            }
-            var arePlaceholdersIncomplete = this.placeholderItems.every(function (item) {
-                return prBody.includes(item);
-            });
-            if (arePlaceholdersIncomplete) {
-                resolve({
-                    isPrBodyComplete: false,
-                    message: "Please complete all placeholders: " + this.placeholderItems.toString()
+                if (arePlaceholdersIncomplete) {
+                    resolve({
+                        isPrBodyComplete: false,
+                        message: `Please complete all placeholders: ${this.placeholderItems.toString()}`
+                    });
+                    return;
+                }
+                const isFinalChecklistComplete = this.completedFinalChecklist.every(function (item) {
+                    return prBody.includes(item);
                 });
-                return;
-            }
-            var isFinalChecklistComplete = this.completedFinalChecklist.every(function (item) {
-                return prBody.includes(item);
-            });
-            if (!isFinalChecklistComplete) {
+                if (!isFinalChecklistComplete) {
+                    resolve({
+                        isPrBodyComplete: false,
+                        message: `Please complete the final checklist: ${this.completedFinalChecklist.toString()}`
+                    });
+                    return;
+                }
                 resolve({
-                    isPrBodyComplete: false,
-                    message: "Please complete the final checklist: " + this.completedFinalChecklist.toString()
-                });
-                return;
-            }
-            resolve({
-                isPrBodyComplete: true,
-                message: `Nice work 👍👍👍
+                    isPrBodyComplete: true,
+                    message: `Nice work 👍👍👍
                     The PR Body has passed all of the validation checks ✅✅✅.
                     Merge away people, merge away!`
+                });
             });
         });
     }

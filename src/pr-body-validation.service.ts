@@ -1,63 +1,60 @@
-import { IPrBodyValidationStatus } from './pr-body-validation-status.model';
+import {IPrBodyValidationStatus} from './pr-body-validation-status.model'
 
 export class PrBodyValidationService {
+  private placeholderItems: string[] = [`{{!!DETAILS GO HERE!!}}`]
 
-    constructor() { }
+  private completedFinalChecklist: string[] = [
+    `- [x] **Author(s):**`,
+    `- [x] **Reviewer(s):**`
+  ]
 
-    private placeholderItems: string[] = [
-        "{{!!DETAILS GO HERE!!}}",
-    ];
+  async validateBody(
+    prBody: string | null | undefined
+  ): Promise<IPrBodyValidationStatus> {
+    return new Promise(resolve => {
+      // Should cater for undefined, null, empty
+      if (!prBody || prBody.length < 1) {
+        resolve({
+          isPrBodyComplete: false,
+          message: `The PR Body is empty - do you have the pull request template setup (docs -> pull_request_template.md)?`
+        })
+        return
+      }
 
-    private completedFinalChecklist: string[] = [
-        "- [x] **Author(s):**",
-        "- [x] **Reviewer(s):**"
-    ];
+      const arePlaceholdersIncomplete = this.placeholderItems.every(function (
+        item
+      ) {
+        return prBody.includes(item)
+      })
 
-    public validateBody(prBody: string | null | undefined): Promise<IPrBodyValidationStatus> {
+      if (arePlaceholdersIncomplete) {
+        resolve({
+          isPrBodyComplete: false,
+          message: `Please complete all placeholders: ${this.placeholderItems.toString()}`
+        })
+        return
+      }
 
-        return new Promise(resolve => {
+      const isFinalChecklistComplete = this.completedFinalChecklist.every(
+        function (item) {
+          return prBody.includes(item)
+        }
+      )
 
-            // Should cater for undefined, null, empty
-            if (!prBody || prBody.length < 1) {
-                resolve({
-                    isPrBodyComplete: false,
-                    message: "The PR Body is empty - do you have the pull request template setup (docs -> pull_request_template.md)?"
-                });
-                return;
-            }
+      if (!isFinalChecklistComplete) {
+        resolve({
+          isPrBodyComplete: false,
+          message: `Please complete the final checklist: ${this.completedFinalChecklist.toString()}`
+        })
+        return
+      }
 
-            var arePlaceholdersIncomplete = this.placeholderItems.every(function (item) {
-                return prBody.includes(item);
-            });
-
-            if (arePlaceholdersIncomplete) {
-                resolve({
-                    isPrBodyComplete: false,
-                    message: "Please complete all placeholders: " + this.placeholderItems.toString()
-                });
-                return;
-            }
-
-            var isFinalChecklistComplete = this.completedFinalChecklist.every(function (item) {
-                return prBody.includes(item);
-            });
-
-            if (!isFinalChecklistComplete) {
-                resolve({
-                    isPrBodyComplete: false,
-                    message: "Please complete the final checklist: " + this.completedFinalChecklist.toString()
-                });
-                return;
-            }
-
-            resolve({
-                isPrBodyComplete: true,
-                message: `Nice work 👍👍👍
+      resolve({
+        isPrBodyComplete: true,
+        message: `Nice work 👍👍👍
                     The PR Body has passed all of the validation checks ✅✅✅.
                     Merge away people, merge away!`
-            });
-        })
-
-    }
-
+      })
+    })
+  }
 }
