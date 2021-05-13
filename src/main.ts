@@ -31,7 +31,7 @@ async function run(): Promise<void> {
     const octokit = github.getOctokit(githubToken)
 
     const prBodyValidationService = new PrBodyValidationService()
-    const result = await prBodyValidationService.validateBody(pr.Body)
+    const result = await prBodyValidationService.validateBody(pr.body)
 
     // Get owner and repo from context
     const owner = github.context.repo.owner
