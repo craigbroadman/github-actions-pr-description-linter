@@ -62,7 +62,7 @@ function run() {
             // here: https://octokit.github.io/rest.js/v18
             const octokit = github.getOctokit(githubToken);
             const prBodyValidationService = new pr_body_validation_service_1.PrBodyValidationService();
-            const result = yield prBodyValidationService.validateBody(pr.Body);
+            const result = yield prBodyValidationService.validateBody(pr.body);
             // Get owner and repo from context
             const owner = github.context.repo.owner;
             const repo = github.context.repo.repo;
