@@ -54,5 +54,5 @@ Pull requests must state the semantic version using "+semver:" plus one of the f
 {{!!DETAILS GO HERE!!}}
 
 # Final checklist
-- [ ] **Contributor:** I have reviewed the [Code Safety Guidelines](https://tinyurl.com/y79wkekq), I am **99% sure** these changes are **safe to merge** and have explained the reasons why **(if not speak to department/tech lead to discuss what else can be done)**
-- [ ] **Reviewer:** I am happy with the above
+- [ ] **Author(s):** I have reviewed the [Code Safety Guidelines](https://tinyurl.com/y79wkekq), I am **99% sure** these changes are **safe to merge** and have explained the reasons why **(if not speak to department/tech lead to discuss what else can be done)**
+- [ ] **Reviewer(s):** I am happy with the above

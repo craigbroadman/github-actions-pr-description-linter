@@ -40,6 +40,19 @@ $ npm test
 ...
 ```
 
+## Pre-requisites
+Use this in-conjunction with a Pull Request Template called "pull_request_template.md" in the docs folder (docs/pull_request_template.md)
+
+In order to be compatible with this GitHub Action, the PR Template must contain the following values: 
+`{{!!details go here!!}}`
+
+This is a placeholder to prompt authors/reviewers to complete. The PR will only be permitted to complete if no placeholders are found. 
+
+`- [] **Author(s):**`
+`- [] **Reviewer(s):**`
+
+We describe this as "The Final Checklist". The PR will only be permitted to complete if these options are found are checked off. 
+
 ## Change action.yml
 
 The action.yml contains defines the inputs and output for your action.
@@ -100,6 +113,10 @@ with:
 
 See the [actions tab](https://github.com/actions/typescript-action/actions) for runs of this action! :rocket:
 
+
 ## Usage:
 
 After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and latest V1 action
+
+
+

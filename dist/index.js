@@ -38,16 +38,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__webpack_require__(186));
 const github = __importStar(__webpack_require__(438));
+const pr_body_validation_service_1 = __webpack_require__(812);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            // const ms: string = core.getInput('milliseconds')
             core.debug(new Date().toTimeString());
             // The pull_request exists on payload when a pull_request event is triggered.
             // Sets action status to failed when pull_request does not exist on payload.
             const pr = github.context.payload.pull_request;
             if (!pr) {
-                core.setFailed('github.context.payload.pull_request does not exist');
+                core.setFailed('github.context.payload.pull_request does not exist. Have the correct event triggers been configured?');
                 return;
             }
             core.debug(`PR body: ${pr.body}`);
@@ -61,20 +61,28 @@ function run() {
             // You can look up the REST interface
             // here: https://octokit.github.io/rest.js/v18
             const octokit = github.getOctokit(githubToken);
+            let prBodyValidationService = new pr_body_validation_service_1.PrBodyValidationService();
+            var result = yield prBodyValidationService.validateBody(pr.Body);
             // Get owner and repo from context
             const owner = github.context.repo.owner;
             const repo = github.context.repo.repo;
             // Create a comment on PR
-            const response = yield octokit.issues.createComment({
-                owner,
-                repo,
-                issue_number: pr.number,
-                body: message
-            });
-            core.debug(`created comment URL: ${response.data.html_url}`);
-            core.setOutput('comment-url', response.data.html_url);
+            if (result.isPrBodyComplete) {
+                const response = yield octokit.issues.createComment({
+                    owner,
+                    repo,
+                    issue_number: pr.number,
+                    body: result.message
+                });
+                core.debug(`created comment URL: ${response.data.html_url}`);
+                core.setOutput('comment-url', response.data.html_url);
+                core.setOutput('responseMessage', "✅ All checks passed: " + result.message);
+            }
+            else {
+                core.setOutput('responseMessage', "🚧 PR Body incomplete: " + result.message);
+                core.setFailed(result.message);
+            }
             core.debug(new Date().toTimeString());
-            core.setOutput('responseMessage', "We are done here!");
         }
         catch (error) {
             core.setFailed(error.message);
@@ -82,6 +90,67 @@ function run() {
     });
 }
 run();
+
+
+/***/ }),
+
+/***/ 812:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PrBodyValidationService = void 0;
+class PrBodyValidationService {
+    constructor() {
+        this.placeholderItems = [
+            "{{!!DETAILS GO HERE!!}}",
+        ];
+        this.completedFinalChecklist = [
+            "- [x] **Author(s):**",
+            "- [x] **Reviewer(s):**"
+        ];
+    }
+    validateBody(prBody) {
+        return new Promise(resolve => {
+            // Should cater for undefined, null, empty
+            if (!prBody || prBody.length < 1) {
+                resolve({
+                    isPrBodyComplete: false,
+                    message: "The PR Body is empty - do you have the pull request template setup (docs -> pull_request_template.md)?"
+                });
+                return;
+            }
+            var arePlaceholdersIncomplete = this.placeholderItems.every(function (item) {
+                return prBody.includes(item);
+            });
+            if (arePlaceholdersIncomplete) {
+                resolve({
+                    isPrBodyComplete: false,
+                    message: "Please complete all placeholders: " + this.placeholderItems.toString()
+                });
+                return;
+            }
+            var isFinalChecklistComplete = this.completedFinalChecklist.every(function (item) {
+                return prBody.includes(item);
+            });
+            if (!isFinalChecklistComplete) {
+                resolve({
+                    isPrBodyComplete: false,
+                    message: "Please complete the final checklist: " + this.completedFinalChecklist.toString()
+                });
+                return;
+            }
+            resolve({
+                isPrBodyComplete: true,
+                message: `Nice work 👍👍👍
+                    The PR Body has passed all of the validation checks ✅✅✅.
+                    Merge away people, merge away!`
+            });
+        });
+    }
+}
+exports.PrBodyValidationService = PrBodyValidationService;
 
 
 /***/ }),
