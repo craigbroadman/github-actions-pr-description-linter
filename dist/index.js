@@ -39,6 +39,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__webpack_require__(186));
 const github = __importStar(__webpack_require__(438));
 const pr_body_validation_service_1 = __webpack_require__(812);
+const repoTokenInput = core.getInput('repo-token', { required: true });
+const githubClient = github.getOctokit(repoTokenInput);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -51,24 +53,17 @@ function run() {
                 return;
             }
             core.debug(`PR body: ${pr.body}`);
-            // Get input parameters.
-            const githubToken = core.getInput(`repo-token`);
             const message = core.getInput(`message`);
             core.debug(`message: ${message}`);
-            // Create a GitHub client.
-            // The Octokit is a helper, to interact with
-            // the github REST interface.
-            // You can look up the REST interface
-            // here: https://octokit.github.io/rest.js/v18
-            const octokit = github.getOctokit(githubToken);
             const prBodyValidationService = new pr_body_validation_service_1.PrBodyValidationService();
             const result = yield prBodyValidationService.validateBody(pr.body);
             // Get owner and repo from context
             const owner = github.context.repo.owner;
             const repo = github.context.repo.repo;
+            const pullRequest = github.context.issue;
             // Create a comment on PR
             if (result.isPrBodyComplete) {
-                const response = yield octokit.issues.createComment({
+                const response = yield githubClient.issues.createComment({
                     owner,
                     repo,
                     issue_number: pr.number,
@@ -80,13 +75,22 @@ function run() {
             }
             else {
                 core.setOutput(`responseMessage`, `🚧 PR Body incomplete: ${result.message}`);
-                core.setFailed(result.message);
+                createReview(result.message, pullRequest);
             }
             core.debug(new Date().toTimeString());
         }
         catch (error) {
             core.setFailed(error.message);
         }
+    });
+}
+function createReview(comment, pullRequest) {
+    void githubClient.pulls.createReview({
+        owner: pullRequest.owner,
+        repo: pullRequest.repo,
+        pull_number: pullRequest.number,
+        body: comment,
+        event: 'REQUEST_CHANGES' // Could use "COMMENT"
     });
 }
 run();
