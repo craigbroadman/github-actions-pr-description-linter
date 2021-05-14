@@ -1,6 +1,6 @@
 name: 'pr-description-lint'
 on: # rebuild any PRs and main branch changes
-  pull_request:
+  pull_request_target:
     # By default, a workflow only runs when a pull_request's activity type is opened, synchronize, or reopened. We
     # explicity override here so that PR titles are re-linted when the PR text content is edited.
     #
