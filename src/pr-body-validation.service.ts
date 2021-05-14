@@ -16,7 +16,7 @@ export class PrBodyValidationService {
       if (!prBody || prBody.length < 1) {
         resolve({
           isPrBodyComplete: false,
-          message: `The PR Body is empty - do you have the pull request template setup (docs -> pull_request_template.md)?`
+          message: `The PR Body is empty - do you have the pull request template setup (docs -> pull_request_template.md)? ❌`
         })
         return
       }
@@ -30,7 +30,7 @@ export class PrBodyValidationService {
       if (arePlaceholdersIncomplete) {
         resolve({
           isPrBodyComplete: false,
-          message: `Please complete all placeholders: ${this.placeholderItems.toString()}`
+          message: `Please complete all placeholders: ${this.placeholderItems.toString()} 🚫`
         })
         return
       }
@@ -44,7 +44,7 @@ export class PrBodyValidationService {
       if (!isFinalChecklistComplete) {
         resolve({
           isPrBodyComplete: false,
-          message: `Please complete the final checklist: ${this.completedFinalChecklist.toString()}`
+          message: `Please complete the final checklist: ${this.completedFinalChecklist.toString()} 🚫`
         })
         return
       }

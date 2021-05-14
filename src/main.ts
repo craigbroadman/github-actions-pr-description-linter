@@ -47,6 +47,7 @@ async function run(): Promise<void> {
         `responseMessage`,
         `✅ All checks passed: ${result.message}`
       )
+      dismissReview(pullRequest)
     } else {
       core.setOutput(
         `responseMessage`,
@@ -72,6 +73,42 @@ function createReview(
     body: comment,
     event: 'REQUEST_CHANGES' // Could use "COMMENT"
   })
+}
+
+async function dismissReview(pullRequest: {
+  owner: string
+  repo: string
+  number: number
+}): Promise<void> {
+  const reviews = await githubClient.pulls.listReviews({
+    owner: pullRequest.owner,
+    repo: pullRequest.repo,
+    pull_number: pullRequest.number
+  })
+
+  for (let i = 0; i < reviews.data.length; i++) {
+    const review = reviews.data[i]
+    if (
+      isGitHubActionUser(review.user?.login) &&
+      alreadyRequiredChanges(review.state)
+    ) {
+      void githubClient.pulls.dismissReview({
+        owner: pullRequest.owner,
+        repo: pullRequest.repo,
+        pull_number: pullRequest.number,
+        review_id: review.id,
+        message: 'All good!'
+      })
+    }
+  }
+}
+
+function isGitHubActionUser(login: string | undefined): boolean {
+  return login === 'github-actions[bot]'
+}
+
+function alreadyRequiredChanges(state: string): boolean {
+  return state === 'CHANGES_REQUESTED'
 }
 
 run()
