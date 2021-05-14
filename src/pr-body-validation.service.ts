@@ -13,7 +13,6 @@ export class PrBodyValidationService {
     prBody: string | null | undefined
   ): Promise<IPrBodyValidationStatus> {
     return new Promise(resolve => {
-
       core.debug(`Validating PR body: ${prBody}`)
 
       // Should cater for undefined, null, empty

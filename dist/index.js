@@ -53,8 +53,6 @@ function run() {
                 return;
             }
             core.debug(`PR body: ${pr.body}`);
-            const message = core.getInput(`message`);
-            core.debug(`message: ${message}`);
             const prBodyValidationService = new pr_body_validation_service_1.PrBodyValidationService();
             const result = yield prBodyValidationService.validateBody(pr.body);
             // Get owner and repo from context
