@@ -3,112 +3,32 @@
 </p>
 
 # Create a JavaScript Action using TypeScript
-
-Use this template to bootstrap the creation of a TypeScript action.:rocket:
-
-This template includes compilation support, tests, a validation workflow, publishing, and versioning guidance.  
-
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
-
-## Create an action from this template
-
-Click the `Use this Template` and provide the new repo details for your action
-
-## Code in Main
-
-> First, you'll need to have a reasonably modern version of `node` handy. This won't work with versions older than 9, for instance.
-
-Install the dependencies  
-```bash
-$ npm install
-```
-
-Build the typescript and package it for distribution
-```bash
-$ npm run build && npm run package
-```
-
-Run the tests :heavy_check_mark:  
-```bash
-$ npm test
-
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
-
-...
-```
+Use this action to validate the body of your pull requests.
+- Use placeholders to ensure the author(s) and reviewer(s) are completing the sections you want completed
+- Enforce author(s) and reviewer(s) to sign off against your quality measures such as your definition of done
 
 ## Pre-requisites
-Use this in-conjunction with a Pull Request Template called "pull_request_template.md" in the docs folder (docs/pull_request_template.md)
+Use this in-conjunction with a Pull Request Template called "pull_request_template.md" in the docs folder (there's an example in docs/pull_request_template.md of this repo!)
 
 In order to be compatible with this GitHub Action, the PR Template must contain the following values: 
-`{{!!details go here!!}}`
+### Placeholders
+`{{!!DETAILS GO HERE!!}}`
 
-This is a placeholder to prompt authors/reviewers to complete. The PR will only be permitted to complete if no placeholders are found. 
+This is a placeholder to prompt authors/reviewers to complete a given section of the PR Body. The GitHub action will fail until no further placeholders are found. 
 
 `- [] **Author(s):**`
 `- [] **Reviewer(s):**`
 
-We describe this as "The Final Checklist". The PR will only be permitted to complete if these options are found are checked off. 
+### Sign off
+We describe this as "The Final Checklist" in our pull_request_template. The GitHub action will fail until these checkboxes are found, and accepted. 
 
-## Change action.yml
-
-The action.yml contains defines the inputs and output for your action.
-
-Update the action.yml with your name, description, inputs and outputs for your action.
-
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
-
-## Change the Code
-
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-import * as core from '@actions/core';
-...
-
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run()
-```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
-
-## Publish to a distribution branch
-
-Actions are run from GitHub repos so we will checkin the packed dist folder. 
-
-Then run [ncc](https://github.com/zeit/ncc) and push the results:
-```bash
-$ npm run package
-$ git add dist
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
-
-Note: We recommend using the `--license` option for ncc, which will create a license file for all of the production node modules used in your project.
-
-Your action is now published! :rocket: 
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Validate
-
-You can now validate the action by referencing `./` in a workflow in your repo (see [test.yml](.github/workflows/test.yml))
+## Usage
 
 ```yaml
-uses: ./
+uses: craigbroadman/github-actions-pr-description-linter@main
 with:
-  milliseconds: 1000
+  message: 'Your message'
+  repo-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 See the [actions tab](https://github.com/actions/typescript-action/actions) for runs of this action! :rocket:
