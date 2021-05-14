@@ -1,4 +1,4 @@
-name: 'ci - runs npm install & npm run all  (build, run tests and lint the code)'
+name: 'build-test'
 
 # Triggered when code is pushed to any branch in a repository
 on: push
