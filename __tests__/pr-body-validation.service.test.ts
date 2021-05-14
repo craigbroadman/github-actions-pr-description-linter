@@ -82,21 +82,3 @@ testCases.forEach(function (testCase) {
     }
   )
 })
-
-test('Validate PR Body null', async () => {
-  var result = await prBodyValidationService.validateBody(null)
-
-  expect(result.isPrBodyComplete).toBe(false)
-  expect(result.message).toBe(
-    'The PR Body is empty - do you have the pull request template setup (docs -> pull_request_template.md)?'
-  )
-})
-
-test('Validate PR Body undefined', async () => {
-  var result = await prBodyValidationService.validateBody(undefined)
-
-  expect(result.isPrBodyComplete).toBe(false)
-  expect(result.message).toBe(
-    'The PR Body is empty - do you have the pull request template setup (docs -> pull_request_template.md)?'
-  )
-})

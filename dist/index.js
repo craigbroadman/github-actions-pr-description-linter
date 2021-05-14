@@ -72,6 +72,7 @@ function run() {
                 core.debug(`created comment URL: ${response.data.html_url}`);
                 core.setOutput(`comment-url`, response.data.html_url);
                 core.setOutput(`responseMessage`, `✅ All checks passed: ${result.message}`);
+                dismissReview(pullRequest);
             }
             else {
                 core.setOutput(`responseMessage`, `🚧 PR Body incomplete: ${result.message}`);
@@ -92,6 +93,35 @@ function createReview(comment, pullRequest) {
         body: comment,
         event: 'REQUEST_CHANGES' // Could use "COMMENT"
     });
+}
+function dismissReview(pullRequest) {
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        const reviews = yield githubClient.pulls.listReviews({
+            owner: pullRequest.owner,
+            repo: pullRequest.repo,
+            pull_number: pullRequest.number
+        });
+        for (let i = 0; i < reviews.data.length; i++) {
+            const review = reviews.data[i];
+            if (isGitHubActionUser((_a = review.user) === null || _a === void 0 ? void 0 : _a.login) &&
+                alreadyRequiredChanges(review.state)) {
+                void githubClient.pulls.dismissReview({
+                    owner: pullRequest.owner,
+                    repo: pullRequest.repo,
+                    pull_number: pullRequest.number,
+                    review_id: review.id,
+                    message: 'All good!'
+                });
+            }
+        }
+    });
+}
+function isGitHubActionUser(login) {
+    return login === 'github-actions[bot]';
+}
+function alreadyRequiredChanges(state) {
+    return state === 'CHANGES_REQUESTED';
 }
 run();
 
@@ -150,7 +180,7 @@ class PrBodyValidationService {
                 if (!prBody || prBody.length < 1) {
                     resolve({
                         isPrBodyComplete: false,
-                        message: `The PR Body is empty - do you have the pull request template setup (docs -> pull_request_template.md)?`
+                        message: `The PR Body is empty - do you have the pull request template setup (docs -> pull_request_template.md)? ❌`
                     });
                     return;
                 }
@@ -160,7 +190,7 @@ class PrBodyValidationService {
                 if (arePlaceholdersIncomplete) {
                     resolve({
                         isPrBodyComplete: false,
-                        message: `Please complete all placeholders: ${this.placeholderItems.toString()}`
+                        message: `Please complete all placeholders: ${this.placeholderItems.toString()} 🚫`
                     });
                     return;
                 }
@@ -170,7 +200,7 @@ class PrBodyValidationService {
                 if (!isFinalChecklistComplete) {
                     resolve({
                         isPrBodyComplete: false,
-                        message: `Please complete the final checklist: ${this.completedFinalChecklist.toString()}`
+                        message: `Please complete the final checklist: ${this.completedFinalChecklist.toString()} 🚫`
                     });
                     return;
                 }
