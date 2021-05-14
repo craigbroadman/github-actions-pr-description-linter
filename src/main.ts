@@ -21,9 +21,6 @@ async function run(): Promise<void> {
 
     core.debug(`PR body: ${pr.body}`)
 
-    const message = core.getInput(`message`)
-    core.debug(`message: ${message}`)
-
     const prBodyValidationService = new PrBodyValidationService()
     const result = await prBodyValidationService.validateBody(pr.body)
 
