@@ -65,13 +65,13 @@ jobs:
       - name: cat package.json
         run: cat ./package.json
 
-      - name: Set version
-        uses: phips28/gh-action-bump-version@master
-        with:
-          tag-prefix: ''
-          version-type:  ${{ steps.determine-version-bump.outputs.version }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Set version
+      #   uses: phips28/gh-action-bump-version@master
+      #   with:
+      #     tag-prefix: ''
+      #     version-type:  ${{ steps.determine-version-bump.outputs.version }}
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: cat package.json
         run: cat ./package.json
