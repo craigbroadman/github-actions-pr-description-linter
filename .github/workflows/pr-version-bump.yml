@@ -1,0 +1,71 @@
+name: PR Version Bump - from pull request title
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - edited
+      - synchronize
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Print Pull Request Title
+        id: pr_title_print
+        run: echo The Title of your PR is ${{ github.event.pull_request.title }}
+
+      - name: Determine Version Bump
+        id: determine-version-bump
+        run: |
+          pr_title="${{ github.event.pull_request.title }}"
+
+          if [[ $pr_title == *'!:'* ]]; then
+            version_bump="major"
+          else
+            commit_type=$(echo "$pr_title" | grep -o '^[^:]\+')
+            commit_type=$(echo "$commit_type" | tr '[:upper:]' '[:lower:]')
+
+            echo Commit Type is "$commit_type"
+
+            # Define mapping of commit types to semantic version bumps
+            case "$commit_type" in
+                build) version_bump="patch" ;;
+                chore) version_bump="patch" ;;
+                ci) version_bump="patch" ;;
+                docs) version_bump="patch" ;;
+                feat) version_bump="minor" ;;
+                fix) version_bump="patch" ;;
+                perf) version_bump="patch" ;;
+                refactor) version_bump="patch" ;;
+                revert) version_bump="patch" ;;
+                style) version_bump="patch" ;;
+                test) version_bump="patch" ;;
+                refactor) version_bump="patch" ;;
+                breaking) version_bump="major" ;;
+                *) version_bump="patch" ;;
+            esac
+          fi
+
+          echo Version Bump is "$version_bump"
+
+          echo "version=$version_bump" >> $GITHUB_OUTPUT
+
+      - name: Print Version
+        run: echo The version is ${{ steps.determine-version-bump.outputs.version }}
+
+      # - name: Set Git User Identity
+      #   run: |
+      #     git config --global user.name "GitHub CI"
+      #     git config --global user.email "automated_ci@ipipeline.com"
+
+      # - name: Set version
+      #   run: npm version ${{ steps.determine-version-bump.outputs.version }}
