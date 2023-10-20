@@ -55,7 +55,7 @@ jobs:
             esac
           fi
 
-          echo Version Bump is "$version_bump"
+          echo Version bump is "$version_bump"
 
           echo "version=$version_bump" >> $GITHUB_OUTPUT
 
