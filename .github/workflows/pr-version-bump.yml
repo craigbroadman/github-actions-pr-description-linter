@@ -21,7 +21,7 @@ jobs:
 
       - name: Print Pull Request Title
         id: pr_title_print
-        run: echo The Title of your PR is ${{ github.event.pull_request.title }}
+        run: echo The title of your PR is ${{ github.event.pull_request.title }}
 
       - name: Determine Version Bump
         id: determine-version-bump
